@@ -478,110 +478,76 @@
       border-top: 1px solid var(--border);
     }
 
-    /* ── LEADERSHIP TEAM ── */
-    .team-grid {
+    /* ── ABOUT / FOUNDER ── */
+    .about-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2px;
-      margin-top: 60px;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
     }
 
     @media (max-width: 900px) {
-      .team-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
     }
 
-    .team-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 48px 40px;
-      transition: all 0.4s;
+    .about-visual {
       position: relative;
-      overflow: hidden;
-    }
-
-    .team-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s;
-    }
-
-    .team-card:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-glow);
-    }
-
-    .team-card:hover::before { transform: scaleX(1); }
-
-    .team-card .team-icon {
-      width: 72px;
-      height: 72px;
+      aspect-ratio: 1;
+      max-width: 460px;
+      background: var(--bg-card);
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 28px;
+      overflow: hidden;
     }
 
-    .team-card .name-title {
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .about-visual svg { opacity: 0.6; }
+
+    .about-content .name-title {
       font-family: 'Rajdhani', sans-serif;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
-    .team-card h3 {
+    .about-content h2 {
       font-family: 'Rajdhani', sans-serif;
-      font-size: 32px;
+      font-size: 40px;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
-    .team-card p {
-      font-size: 14px;
+    .about-content p {
+      font-size: 15px;
       font-weight: 300;
       color: var(--text-secondary);
       line-height: 1.8;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-
-    .team-card .team-linkedin {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent-dim);
-      text-decoration: none;
-      margin-top: 8px;
-      transition: color 0.25s;
-    }
-
-    .team-card .team-linkedin:hover { color: var(--accent); }
 
     .credential-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 24px;
+      gap: 10px;
+      margin-top: 32px;
     }
 
     .cred-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 1.5px;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border: 1px solid var(--border);
       color: var(--text-secondary);
       text-transform: uppercase;
@@ -931,36 +897,37 @@
   </div>
 </section>
 
-<!-- ════ LEADERSHIP ════ -->
+<!-- ════ FOUNDER ════ -->
 <section id="founder">
   <div class="section-tag"><span></span>Leadership</div>
-  <h2 class="section-title reveal">The Team</h2>
-  <p class="section-desc reveal">
-    Two disciplines, one mission — engineering security from the ground up and running it like a business.
-  </p>
-
-  <div class="team-grid">
-    <!-- Nigero Vargas -->
-    <div class="team-card reveal">
-      <div class="team-icon">
-        <svg viewBox="0 0 44 48" width="36" height="40" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="t1-g" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0055FF"/><stop offset="100%" stop-color="#00D4FF"/>
-            </linearGradient>
-          </defs>
-          <path d="M2,4 L12,4 L22,38 L32,4 L42,4 L22,46 Z" fill="url(#t1-g)" opacity="0.25"/>
-          <path d="M2,4 L12,4 L22,38 L32,4 L42,4 L22,46 Z" fill="none" stroke="url(#t1-g)" stroke-width="0.8" opacity="0.6"/>
-          <line x1="10" y1="22" x2="34" y2="22" stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
-        </svg>
-      </div>
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="about-g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0055FF"/>
+            <stop offset="100%" stop-color="#00D4FF"/>
+          </linearGradient>
+        </defs>
+        <path d="M40,30 L60,30 L100,160 L140,30 L160,30 L100,180 Z"
+              fill="url(#about-g)" opacity="0.2"/>
+        <path d="M40,30 L60,30 L100,160 L140,30 L160,30 L100,180 Z"
+              fill="none" stroke="url(#about-g)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="55" y1="90" x2="145" y2="90"
+              stroke="rgba(0,212,255,0.2)" stroke-width="1"/>
+        <text x="100" y="110" text-anchor="middle"
+              font-family="Rajdhani, sans-serif" font-weight="700" font-size="11"
+              fill="#5A7A9A" letter-spacing="4">FOUNDER</text>
+      </svg>
+    </div>
+    <div class="about-content reveal">
       <div class="name-title">Founder &amp; Principal Engineer</div>
-      <h3>Nigero Vargas</h3>
+      <h2>Nigero Vargas</h2>
       <p>
         Indiana Army National Guard veteran turned cybersecurity engineer. Nearly two decades spent inside the wire — configuring switches, debugging RADIUS failures at 2 AM, and building authentication systems that actually hold up under pressure.
       </p>
       <p>
-        Nigero's depth in 802.1X and network access control comes from years of hands-on field work, not slide decks. VLABS Cyber is the lab he always wanted — a place to research, test, train, and build without compromise.
+        Nigero's depth in 802.1X and network access control comes from years of hands-on field work, not slide decks. VLABS Cyber is the lab he always wanted — a place to research, test, train, and build without compromise. Native Spanish speaker delivering technical depth across North and Latin American markets.
       </p>
       <div class="credential-tags">
         <span class="cred-tag">Zero Trust</span>
@@ -970,47 +937,6 @@
         <span class="cred-tag">US Veteran</span>
         <span class="cred-tag">EN / ES</span>
       </div>
-      <a href="https://www.linkedin.com/in/nigero-vargas-22a29210/" target="_blank" rel="noopener" class="team-linkedin">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        LinkedIn
-      </a>
-    </div>
-
-    <!-- Natalio Vargas -->
-    <div class="team-card reveal">
-      <div class="team-icon">
-        <svg viewBox="0 0 44 48" width="36" height="40" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="t2-g" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0055FF"/><stop offset="100%" stop-color="#00D4FF"/>
-            </linearGradient>
-          </defs>
-          <rect x="4" y="4" width="36" height="40" rx="2" fill="url(#t2-g)" opacity="0.15"/>
-          <rect x="4" y="4" width="36" height="40" rx="2" fill="none" stroke="url(#t2-g)" stroke-width="0.8" opacity="0.5"/>
-          <line x1="12" y1="18" x2="32" y2="18" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
-          <line x1="12" y1="24" x2="28" y2="24" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
-          <line x1="12" y1="30" x2="24" y2="30" stroke="rgba(0,212,255,0.1)" stroke-width="1"/>
-        </svg>
-      </div>
-      <div class="name-title">Chief Financial Officer</div>
-      <h3>Natalio Vargas</h3>
-      <p>
-        Kelley School of Business graduate bringing structured financial discipline to a technical operation. Natalio's background in program management at gategroup — a global aviation services company operating across 200+ locations — trained him to manage complex budgets, cross-functional teams, and high-volume operational finance.
-      </p>
-      <p>
-        At VLABS Cyber, he owns financial strategy, resource planning, and the business infrastructure that lets the engineering side focus on what it does best. If Nigero builds the lab, Natalio makes sure the lab stays funded and running.
-      </p>
-      <div class="credential-tags">
-        <span class="cred-tag">Financial Strategy</span>
-        <span class="cred-tag">PMO</span>
-        <span class="cred-tag">Kelley School</span>
-        <span class="cred-tag">Operations</span>
-        <span class="cred-tag">EN / ES</span>
-      </div>
-      <a href="https://www.linkedin.com/in/natalio-vargas-9533b92aa/" target="_blank" rel="noopener" class="team-linkedin">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        LinkedIn
-      </a>
     </div>
   </div>
 </section>
