@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLABS Cyber — V-Mark Logo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      padding: 60px 30px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    h2 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── DARK VERSION ── */
+    .dark-section {
+      background: #050C18;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 30px;
+      border-radius: 18px;
+    }
+
+    .dark-section h2 { color: #00C4EE; margin-bottom: 40px; }
+    .dark-section .label { color: #1E3A55; }
+
+    /* ── LIGHT VERSION ── */
+    .light-section {
+      background: #F4F6F8;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 30px;
+      border-radius: 18px;
+    }
+
+    .light-section h2 { color: #003DBB; margin-bottom: 40px; }
+    .light-section .label { color: #8899AA; }
+
+    /* ── ICON SIZES ── */
+    .sizes {
+      display: flex;
+      align-items: flex-end;
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .size-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .size-label {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #556;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════ DARK ════ -->
+<div class="dark-section">
+  <h2>Concept 03 — The V-Mark</h2>
+
+  <svg viewBox="0 0 290 86" width="290" height="86" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="c3-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0055FF"/>
+        <stop offset="50%" stop-color="#0088EE"/>
+        <stop offset="100%" stop-color="#00D4FF"/>
+      </linearGradient>
+      <filter id="c3-glow">
+        <feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- Bold gradient V chevron -->
+    <path d="M5,8 L19,8 L44,70 L69,8 L83,8 L44,82 Z"
+          fill="url(#c3-grad)" filter="url(#c3-glow)"/>
+
+    <!-- Horizontal scan line -->
+    <line x1="20" y1="42" x2="68" y2="42"
+          stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+
+    <!-- VLABS -->
+    <text x="98" y="46"
+          font-family="Rajdhani, 'Arial Black', sans-serif"
+          font-weight="700" font-size="36" fill="#FFFFFF" letter-spacing="2">VLABS</text>
+
+    <!-- Gradient accent bar -->
+    <rect x="98" y="54" width="148" height="1.5" rx="1" fill="url(#c3-grad)" opacity="0.55"/>
+
+    <!-- CYBER -->
+    <text x="98" y="72"
+          font-family="Inter, Arial, sans-serif"
+          font-weight="300" font-size="13" fill="#7FCCEE" letter-spacing="9">CYBER</text>
+  </svg>
+
+  <!-- Icon sizes on dark -->
+  <div class="sizes">
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="v64-g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0055FF"/><stop offset="100%" stop-color="#00D4FF"/>
+          </linearGradient>
+        </defs>
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/>
+      </svg>
+      <span class="size-label" style="color:#2E4A65;">64px</span>
+    </div>
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+      </svg>
+      <span class="size-label" style="color:#2E4A65;">40px</span>
+    </div>
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+      </svg>
+      <span class="size-label" style="color:#2E4A65;">24px</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ LIGHT ════ -->
+<div class="light-section">
+  <h2>Light Background</h2>
+
+  <svg viewBox="0 0 290 86" width="290" height="86" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="c3l-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#003DBB"/>
+        <stop offset="100%" stop-color="#0088AA"/>
+      </linearGradient>
+    </defs>
+    <path d="M5,8 L19,8 L44,70 L69,8 L83,8 L44,82 Z" fill="url(#c3l-grad)"/>
+    <line x1="20" y1="42" x2="68" y2="42" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+    <text x="98" y="46"
+          font-family="Rajdhani, 'Arial Black', sans-serif"
+          font-weight="700" font-size="36" fill="#080F1C" letter-spacing="2">VLABS</text>
+    <rect x="98" y="54" width="148" height="1.5" rx="1" fill="url(#c3l-grad)" opacity="0.6"/>
+    <text x="98" y="72"
+          font-family="Inter, Arial, sans-serif"
+          font-weight="300" font-size="13" fill="#004466" letter-spacing="9">CYBER</text>
+  </svg>
+
+  <!-- Icon sizes on light -->
+  <div class="sizes">
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="v64l-g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#003DBB"/><stop offset="100%" stop-color="#0088AA"/>
+          </linearGradient>
+        </defs>
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64l-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
+      </svg>
+      <span class="size-label">64px</span>
+    </div>
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64l-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+      </svg>
+      <span class="size-label">40px</span>
+    </div>
+    <div class="size-item">
+      <svg viewBox="0 0 80 82" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8,6 L22,6 L40,62 L58,6 L72,6 L40,76 Z" fill="url(#v64l-g)"/>
+        <line x1="18" y1="34" x2="62" y2="34" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+      </svg>
+      <span class="size-label">24px</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
