@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLABS Cyber — Approach B: Dark OLED Minimal</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='16,4 4,28 16,22' fill='%230055FF'/><polygon points='16,4 28,28 16,22' fill='%2300D4FF'/></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Outfit:wght@200;300;400;500;600;700&display=swap');
+
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --black: #000000;
+      --card: #121212;
+      --card-elevated: #1A1A1A;
+      --midnight: #0A0E27;
+      --blue: #0080FF;
+      --cyan: #00D4FF;
+      --grad-start: #0055FF;
+      --grad-end: #00D4FF;
+      --text: #E0E0E0;
+      --text-dim: #888888;
+      --text-muted: #555555;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
+      --glow-blue: rgba(0, 128, 255, 0.15);
+      --glow-cyan: rgba(0, 212, 255, 0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --max-w: 1200px;
+      --nav-h: 72px;
+    }
+
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    ::selection {
+      background: rgba(0, 128, 255, 0.3);
+      color: #fff;
+    }
+
+    /* ══════════════════════════════════════════
+       APPROACH LABEL BANNER
+    ══════════════════════════════════════════ */
+    .approach-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      text-align: center;
+      padding: 6px 16px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    /* ══════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════ */
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 120px 0;
+    }
+
+    /* ══════════════════════════════════════════
+       TYPOGRAPHY
+    ══════════════════════════════════════════ */
+    h1, h2, h3, h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .section-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 5vw, 52px);
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--text-dim);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════════
+       GRADIENT TEXT
+    ══════════════════════════════════════════ */
+    .grad-text {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ══════════════════════════════════════════
+       GLOW UTILITIES
+    ══════════════════════════════════════════ */
+    .glow-text {
+      text-shadow: 0 0 40px rgba(0, 128, 255, 0.2), 0 0 80px rgba(0, 212, 255, 0.08);
+    }
+
+    /* ══════════════════════════════════════════
+       FROSTED GLASS CARD
+    ══════════════════════════════════════════ */
+    .glass {
+      background: rgba(18, 18, 18, 0.6);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .glass:hover {
+      border-color: var(--border-hover);
+      background: rgba(18, 18, 18, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--glow-blue);
+    }
+
+    /* ══════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--grad-start), var(--blue));
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(0, 85, 255, 0.25);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 8px 40px rgba(0, 85, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-hover);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 212, 255, 0.04);
+    }
+
+    /* Arrow icon for buttons */
+    .btn svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.3s;
+    }
+
+    .btn:hover svg {
+      transform: translateX(3px);
+    }
+
+    /* ══════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ══════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 30px; /* below approach banner */
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.4s;
+    }
+
+    nav.scrolled {
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .nav-wordmark {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .nav-wordmark span {
+      font-weight: 400;
+      color: var(--text-dim);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .nav-links a {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--cyan);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border: 1px solid rgba(0, 128, 255, 0.4);
+      border-radius: var(--radius-sm);
+      color: var(--cyan);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.35s;
+    }
+
+    .nav-cta:hover {
+      background: rgba(0, 128, 255, 0.1);
+      border-color: var(--cyan);
+      box-shadow: 0 0 24px var(--glow-cyan);
+    }
+
+    /* Mobile nav toggle */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: calc(var(--nav-h) + 30px);
+    }
+
+    .hero .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    /* Subtle radial glow behind hero */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(0, 85, 255, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+    }
+
+    .hero h1 {
+      font-size: clamp(52px, 8vw, 104px);
+      line-height: 0.95;
+      letter-spacing: -2px;
+      color: #fff;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    .hero h1 .line-2 {
+      display: block;
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-dim);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+
+    /* ══════════════════════════════════════════
+       STATS / PROOF BAR
+    ══════════════════════════════════════════ */
+    .stats {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 14, 39, 0.3);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .stat-item {
+      background: var(--black);
+      padding: 40px 32px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    .stat-item:hover {
+      background: rgba(18, 18, 18, 0.5);
+    }
+
+    .stat-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      text-shadow: 0 0 30px var(--glow-blue);
+    }
+
+    .stat-value .accent {
+      color: var(--cyan);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════════════════
+       SERVICES
+    ══════════════════════════════════════════ */
+    .services { background: var(--black); }
+
+    .services-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .services-header .section-desc {
+      margin: 0 auto;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .service-card {
+      padding: 44px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .service-card:hover::before {
+      opacity: 1;
+    }
+
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 128, 255, 0.08);
+      border: 1px solid rgba(0, 128, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      transition: all 0.3s;
+    }
+
+    .service-card:hover .service-icon {
+      background: rgba(0, 128, 255, 0.12);
+      border-color: rgba(0, 128, 255, 0.3);
+      box-shadow: 0 0 24px var(--glow-blue);
+    }
+
+    .service-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--cyan);
+    }
+
+    .service-card h3 {
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .service-card p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .service-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .service-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(0, 128, 255, 0.06);
+      border: 1px solid rgba(0, 128, 255, 0.12);
+      color: var(--text-dim);
+    }
+
+    /* ══════════════════════════════════════════
+       APPROACH
+    ══════════════════════════════════════════ */
+    .approach {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+    }
+
+    .approach-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .approach-left {
+      position: sticky;
+      top: 140px;
+    }
+
+    .approach-left .section-desc {
+      margin-bottom: 32px;
+    }
+
+    .approach-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .step {
+      padding: 32px;
+      position: relative;
+      counter-increment: step-counter;
+    }
+
+    .step-number {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: rgba(0, 128, 255, 0.1);
+      line-height: 1;
+      margin-bottom: 12px;
+      transition: color 0.3s;
+    }
+
+    .step:hover .step-number {
+      color: rgba(0, 128, 255, 0.2);
+    }
+
+    .step h4 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════════
+       FOUNDER
+    ══════════════════════════════════════════ */
+    .founder {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+    }
+
+    .founder-card {
+      padding: 64px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .founder-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0, 85, 255, 0.15), rgba(0, 212, 255, 0.1));
+      border: 2px solid rgba(0, 128, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .founder-avatar-inner {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .founder-info h3 {
+      font-size: 32px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .founder-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+    }
+
+    .founder-bio {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+
+    .founder-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .founder-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 8px;
+      background: rgba(0, 128, 255, 0.06);
+      border: 1px solid rgba(0, 128, 255, 0.12);
+      color: var(--text-dim);
+      transition: all 0.3s;
+    }
+
+    .founder-tag:hover {
+      border-color: rgba(0, 128, 255, 0.25);
+      color: var(--text);
+    }
+
+    /* ══════════════════════════════════════════
+       CTA SECTION
+    ══════════════════════════════════════════ */
+    .cta-section {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .cta-section .section-title {
+      font-size: clamp(36px, 5vw, 60px);
+      margin-bottom: 16px;
+    }
+
+    .cta-section .section-desc {
+      margin: 0 auto 48px;
+      text-align: center;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .cta-contact {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-dim);
+      transition: color 0.3s;
+    }
+
+    .cta-link svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .cta-link:hover {
+      color: var(--cyan);
+    }
+
+    .cta-link:hover svg {
+      color: var(--cyan);
+    }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--text-dim); }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .approach-content {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .approach-left {
+        position: static;
+      }
+
+      .founder-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 32px;
+        padding: 48px 32px;
+      }
+
+      .founder-avatar {
+        margin: 0 auto;
+      }
+
+      .founder-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .founder-bio {
+        max-width: 100%;
+      }
+
+      .founder-tags {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-bottom: 1px solid var(--border);
+        padding: 20px 0;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a,
+      .nav-links li:last-child .nav-cta {
+        padding: 14px 24px;
+        width: 100%;
+        display: block;
+        text-align: left;
+      }
+
+      .nav-links a::after { display: none; }
+
+      .nav-toggle { display: flex; }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 80px 0;
+      }
+
+      .hero h1 {
+        font-size: clamp(40px, 10vw, 72px);
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .cta-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .cta-contact {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════ APPROACH LABEL ════════════ -->
+  <div class="approach-banner">Approach B — Dark OLED Minimal</div>
+
+  <!-- ════════════ NAV ════════════ -->
+  <nav id="nav">
+    <a href="#" class="nav-logo" aria-label="VLABS Cyber Home">
+      <!-- V-Mark Chevron Logo -->
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vmark" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0055FF"/>
+            <stop offset="100%" stop-color="#00D4FF"/>
+          </linearGradient>
+        </defs>
+        <path d="M18 30L4 8h8l6 12 6-12h8L18 30z" fill="url(#vmark)"/>
+        <!-- scan line -->
+        <rect x="6" y="16" width="24" height="1.5" rx="0.75" fill="#00D4FF" opacity="0.4"/>
+      </svg>
+      <div class="nav-wordmark">VLABS <span>Cyber</span></div>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#founder">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" class="nav-cta">Get Started</a></li>
+    </ul>
+  </nav>
+
+  <!-- ════════════ HERO ════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">Cybersecurity Research &amp; Engineering</div>
+      <h1>
+        <span class="grad-text glow-text">Where Security</span>
+        <span class="line-2">Gets Engineered</span>
+      </h1>
+      <p class="hero-desc">
+        An independent cybersecurity lab focused on authentication research,
+        Zero Trust architecture, and hands-on technical training. Real engineering.
+        No slides. No sales pitches.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">
+          Work With Us
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="#services" class="btn btn-ghost">What We Do</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ STATS / PROOF BAR ════════════ -->
+  <section class="stats" id="stats">
+    <div class="container">
+      <div class="stats-grid reveal">
+        <div class="stat-item">
+          <div class="stat-value">18<span class="accent">+</span></div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Lab<span class="accent">-</span>Driven</div>
+          <div class="stat-label">Research Model</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Zero Trust</div>
+          <div class="stat-label">Engineering Focus</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">EN<span class="accent">/</span>ES</div>
+          <div class="stat-label">Bilingual Delivery</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ SERVICES ════════════ -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header reveal">
+        <span class="section-label">What We Do</span>
+        <h2 class="section-title">Services</h2>
+        <p class="section-desc">Focused capabilities built on years of lab research, field deployment, and protocol-level engineering.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Card 1 -->
+        <div class="service-card glass reveal reveal-delay-1">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              <circle cx="12" cy="16" r="1"/>
+            </svg>
+          </div>
+          <h3>Authentication Engineering</h3>
+          <p>Deep-level 802.1X, RADIUS, EAP, and PKI implementation. Protocol configuration, troubleshooting, and architecture from someone who has lived it.</p>
+          <div class="service-tags">
+            <span class="service-tag">802.1X</span>
+            <span class="service-tag">RADIUS</span>
+            <span class="service-tag">EAP-TLS</span>
+            <span class="service-tag">PKI</span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="service-card glass reveal reveal-delay-2">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3>Zero Trust R&D</h3>
+          <p>Architecture and implementation for Zero Trust environments. Identity-centric access, microsegmentation, and continuous verification built from research.</p>
+          <div class="service-tags">
+            <span class="service-tag">NAC</span>
+            <span class="service-tag">Microsegmentation</span>
+            <span class="service-tag">Identity</span>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="service-card glass reveal reveal-delay-3">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </div>
+          <h3>Technical Training</h3>
+          <p>Hands-on instruction in authentication protocols, network security, and Zero Trust concepts. Delivered in English and Spanish for maximum reach.</p>
+          <div class="service-tags">
+            <span class="service-tag">English</span>
+            <span class="service-tag">Spanish</span>
+            <span class="service-tag">Hands-On</span>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="service-card glass reveal reveal-delay-4">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+              <line x1="14" y1="4" x2="10" y2="20"/>
+            </svg>
+          </div>
+          <h3>Tool Development</h3>
+          <p>Custom security tooling and open-source projects born from lab work. Built to solve real problems, shared with the community.</p>
+          <div class="service-tags">
+            <span class="service-tag">Open Source</span>
+            <span class="service-tag">Custom Tools</span>
+            <span class="service-tag">Lab-Built</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ APPROACH ════════════ -->
+  <section class="approach" id="approach">
+    <div class="container">
+      <div class="approach-content">
+        <div class="approach-left reveal">
+          <span class="section-label">How We Work</span>
+          <h2 class="section-title">Lab First</h2>
+          <p class="section-desc">
+            Every engagement starts in the lab. We research the problem, build a solution,
+            stress-test it, and document everything. No guesswork. No vendor hand-waving.
+            Just methodical engineering grounded in real protocol behavior.
+          </p>
+        </div>
+
+        <div class="approach-steps">
+          <div class="step glass reveal reveal-delay-1">
+            <div class="step-number">01</div>
+            <h4>Research</h4>
+            <p>Dig into the protocols, read the RFCs, analyze the packet captures. Understand the problem at the deepest level before touching a single config.</p>
+          </div>
+
+          <div class="step glass reveal reveal-delay-2">
+            <div class="step-number">02</div>
+            <h4>Build</h4>
+            <p>Stand up the architecture in the lab. Real hardware, real software, real configurations. Replicate the production environment as closely as possible.</p>
+          </div>
+
+          <div class="step glass reveal reveal-delay-3">
+            <div class="step-number">03</div>
+            <h4>Break</h4>
+            <p>Intentionally stress, fault-inject, and edge-case test every component. If it breaks in the lab, it would have broken in production. Find it first.</p>
+          </div>
+
+          <div class="step glass reveal reveal-delay-4">
+            <div class="step-number">04</div>
+            <h4>Document</h4>
+            <p>Produce clear, thorough documentation that any engineer can follow. Configs, diagrams, decision rationale. The work speaks for itself.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ FOUNDER ════════════ -->
+  <section class="founder" id="founder">
+    <div class="container">
+      <span class="section-label reveal" style="text-align:center;display:block;">Who We Are</span>
+      <h2 class="section-title reveal" style="text-align:center;margin-bottom:48px;">The Engineer Behind the Lab</h2>
+
+      <div class="founder-card glass reveal">
+        <div class="founder-avatar">
+          <span class="founder-avatar-inner">NV</span>
+        </div>
+        <div class="founder-info">
+          <h3>Nigero Vargas</h3>
+          <div class="founder-title">Founder &amp; Principal Engineer</div>
+          <p class="founder-bio">
+            Army veteran turned cybersecurity engineer with 18+ years in the field.
+            Specializes in 802.1X, RADIUS, and network access control at the protocol
+            level. Native Spanish speaker delivering training and consulting across
+            English and Spanish. Built VLABS Cyber as an independent lab to do security
+            work the right way — research first, engineering always.
+          </p>
+          <div class="founder-tags">
+            <span class="founder-tag">Army Veteran</span>
+            <span class="founder-tag">802.1X / RADIUS</span>
+            <span class="founder-tag">Zero Trust</span>
+            <span class="founder-tag">NAC</span>
+            <span class="founder-tag">PKI</span>
+            <span class="founder-tag">Bilingual EN/ES</span>
+            <span class="founder-tag">Lab Researcher</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ CTA ════════════ -->
+  <section class="cta-section" id="contact">
+    <div class="container reveal">
+      <span class="section-label">Ready?</span>
+      <h2 class="section-title"><span class="grad-text">Let's Build Something</span></h2>
+      <p class="section-desc">
+        Whether it is an authentication architecture challenge, Zero Trust design,
+        or training for your team — let's talk about what you need built.
+      </p>
+      <div class="cta-actions">
+        <a href="mailto:contact@vlabscyber.com" class="btn btn-primary">
+          Get In Touch
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="https://calendly.com/indyciscolab/30min" target="_blank" rel="noopener" class="btn btn-primary">
+          Schedule a Call
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/vlabscyber" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+      </div>
+      <div class="cta-contact">
+        <a href="mailto:contact@vlabscyber.com" class="cta-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          contact@vlabscyber.com
+        </a>
+        <a href="https://calendly.com/indyciscolab/30min" target="_blank" rel="noopener" class="cta-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Schedule a Call
+        </a>
+        <a href="https://www.linkedin.com/company/vlabscyber" target="_blank" rel="noopener" class="cta-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ FOOTER ════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-copy">&copy; 2026 VLABS Cyber. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="#services">Services</a>
+          <a href="#approach">Approach</a>
+          <a href="#founder">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════ SCRIPTS ════════════ -->
+  <script>
+    // ── Nav scroll behavior ──
+    const nav = document.getElementById('nav');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 60) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+      lastScroll = scrollY;
+    }, { passive: true });
+
+    // ── Mobile nav toggle ──
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('open');
+    });
+
+    // Close mobile nav on link click
+    links.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        links.classList.remove('open');
+      });
+    });
+
+    // ── Intersection Observer for reveal animations ──
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -60px 0px'
+    });
+
+    revealElements.forEach(el => observer.observe(el));
+
+    // ── Smooth scroll for anchor links ──
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (target) {
+          e.preventDefault();
+          const navHeight = nav.offsetHeight + 30; // banner height
+          const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

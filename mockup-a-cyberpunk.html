@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLABS Cyber — Approach A: Cyberpunk Terminal</title>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #00FF41;
+  --green-dim: #00ff4133;
+  --green-mid: #00ff4188;
+  --black: #000000;
+  --card: #0C130E;
+  --red: #FF3333;
+  --border: #1F1F1F;
+  --blue-start: #0055FF;
+  --blue-end: #00D4FF;
+  --glow: 0 0 10px #00ff4166, 0 0 40px #00ff4122;
+  --glow-strong: 0 0 7px #00FF41, 0 0 20px #00ff4188, 0 0 60px #00ff4133;
+  --glow-red: 0 0 7px #FF3333, 0 0 20px #ff333388;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--green);
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ========== SCANLINE OVERLAY ========== */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Subtle CRT flicker */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--green-mid); }
+
+/* ========== APPROACH LABEL ========== */
+.approach-label {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10000;
+  background: var(--red);
+  color: #000;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  padding: 5px 0;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ========== CONTAINER ========== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ========== GLITCH KEYFRAMES ========== */
+@keyframes glitch {
+  0%, 100% { text-shadow: var(--glow-strong); transform: translate(0); }
+  20% { text-shadow: -2px 0 #FF3333, 2px 0 #00D4FF, var(--glow-strong); }
+  40% { text-shadow: 2px 0 #FF3333, -2px 0 #00D4FF, var(--glow-strong); transform: translate(-1px, 1px); }
+  60% { text-shadow: -1px 0 #FF3333, 1px 0 #00D4FF, var(--glow-strong); transform: translate(1px, -1px); }
+  80% { text-shadow: 1px 0 #FF3333, -1px 0 #00D4FF, var(--glow-strong); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes scanline-move {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 5px var(--green-dim); }
+  50% { box-shadow: 0 0 20px var(--green-dim), 0 0 40px #00ff4111; }
+}
+
+@keyframes flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.4; }
+}
+
+/* ========== NAV ========== */
+nav {
+  position: fixed;
+  top: 26px; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+/* V-Mark SVG logo */
+.v-mark {
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+.v-mark svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 6px rgba(0, 136, 255, 0.5));
+}
+
+.nav-wordmark {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  letter-spacing: 4px;
+  color: var(--green);
+  text-shadow: var(--glow);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--green);
+  text-decoration: none;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+  text-shadow: var(--glow);
+}
+
+.nav-links a::before {
+  content: '> ';
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-links a:hover::before {
+  opacity: 1;
+}
+
+.nav-cta {
+  background: transparent !important;
+  border: 1px solid var(--green) !important;
+  color: var(--green) !important;
+  padding: 8px 18px !important;
+  font-family: 'Fira Code', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+.nav-cta::before { display: none !important; }
+
+.nav-cta:hover {
+  background: var(--green) !important;
+  color: #000 !important;
+  box-shadow: var(--glow-strong);
+}
+
+/* Mobile nav */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--green);
+  transition: all 0.3s ease;
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 120px;
+  padding-bottom: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(0, 255, 65, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 85, 255, 0.02) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Animated scanline bar */
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--green-mid), transparent);
+  animation: scanline-move 4s linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.hero-eyebrow {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  opacity: 0.6;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-eyebrow::before {
+  content: '[';
+  color: var(--green-mid);
+}
+.hero-eyebrow::after {
+  content: ']';
+  color: var(--green-mid);
+}
+
+.hero h1 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.1;
+  color: var(--green);
+  text-shadow: var(--glow-strong);
+  margin-bottom: 24px;
+  animation: glitch 8s ease-in-out infinite;
+}
+
+.hero h1 .cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  background: var(--green);
+  margin-left: 4px;
+  vertical-align: baseline;
+  animation: blink 1s step-end infinite;
+  box-shadow: var(--glow);
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--green);
+  opacity: 0.55;
+  line-height: 1.8;
+  margin-bottom: 36px;
+  max-width: 540px;
+}
+
+.hero-desc .prompt {
+  color: var(--green-mid);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 14px 32px;
+  background: var(--green);
+  color: #000;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow-strong);
+  transform: translateY(-1px);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::after {
+  left: 100%;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--green);
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--green);
+  box-shadow: var(--glow);
+  transform: translateY(-1px);
+}
+
+/* ========== SECTION SHARED ========== */
+section {
+  padding: 100px 0;
+  position: relative;
+}
+
+.section-label {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--green);
+  opacity: 0.35;
+  margin-bottom: 12px;
+}
+
+.section-label::before {
+  content: '// ';
+}
+
+.section-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(24px, 4vw, 36px);
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  color: var(--green);
+  opacity: 0.5;
+  font-size: 13px;
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 48px;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ========== STATS ========== */
+.stats {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--border);
+}
+
+.stat-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 28px;
+  color: var(--green);
+  text-shadow: var(--glow);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  opacity: 0.4;
+}
+
+/* ========== SERVICES ========== */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.service-card:hover {
+  border-color: var(--green-dim);
+  box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.02), var(--glow);
+  transform: translateY(-2px);
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.service-card:hover::before {
+  opacity: 0.6;
+}
+
+.service-icon {
+  font-size: 18px;
+  margin-bottom: 20px;
+  display: block;
+  color: var(--green);
+  opacity: 0.7;
+  font-family: 'Fira Code', monospace;
+}
+
+.service-card h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.service-card p {
+  font-size: 12px;
+  color: var(--green);
+  opacity: 0.45;
+  line-height: 1.8;
+}
+
+.service-tags {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.service-tags span {
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  color: var(--green);
+  opacity: 0.5;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ========== APPROACH ========== */
+.approach-section {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.approach-header {
+  margin-bottom: 48px;
+}
+
+.approach-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+
+.approach-step {
+  padding: 32px 24px;
+  border: 1px solid var(--border);
+  background: var(--black);
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.approach-step:hover {
+  border-color: var(--green-dim);
+  background: rgba(0, 255, 65, 0.01);
+}
+
+.step-number {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 32px;
+  color: var(--green);
+  opacity: 0.15;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.approach-step h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.approach-step p {
+  font-size: 11px;
+  color: var(--green);
+  opacity: 0.4;
+  line-height: 1.8;
+}
+
+/* Terminal prompt decoration */
+.approach-step::after {
+  content: '$ _';
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: var(--green);
+  opacity: 0.1;
+}
+
+/* ========== FOUNDER ========== */
+.founder-section .founder-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.founder-terminal {
+  width: 280px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  animation: pulse-green 4s ease-in-out infinite;
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(0, 255, 65, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.terminal-dot.red { border-color: var(--red); background: rgba(255, 51, 51, 0.3); }
+.terminal-dot.yellow { border-color: #FFB800; background: rgba(255, 184, 0, 0.3); }
+.terminal-dot.green { border-color: var(--green); background: rgba(0, 255, 65, 0.3); }
+
+.terminal-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.3;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.terminal-body {
+  padding: 20px;
+  font-size: 11px;
+  line-height: 2;
+}
+
+.terminal-body .line {
+  display: block;
+  opacity: 0.6;
+}
+
+.terminal-body .line .key {
+  color: var(--green);
+  opacity: 0.4;
+}
+
+.terminal-body .line .val {
+  color: var(--green);
+  opacity: 0.8;
+}
+
+.terminal-body .line .val.highlight {
+  opacity: 1;
+  text-shadow: var(--glow);
+}
+
+.founder-content h2 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 28px;
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: 8px;
+}
+
+.founder-title {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  opacity: 0.4;
+  margin-bottom: 24px;
+}
+
+.founder-bio {
+  font-size: 13px;
+  color: var(--green);
+  opacity: 0.5;
+  line-height: 1.9;
+  margin-bottom: 28px;
+  max-width: 520px;
+}
+
+.credential-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.credential-tags span {
+  font-size: 10px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  color: var(--green);
+  opacity: 0.6;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.credential-tags span:hover {
+  border-color: var(--green-dim);
+  opacity: 1;
+  text-shadow: var(--glow);
+}
+
+/* ========== CTA SECTION ========== */
+.cta-section {
+  text-align: center;
+  padding: 120px 0;
+  position: relative;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 255, 65, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-section h2 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(28px, 4vw, 42px);
+  color: var(--green);
+  text-shadow: var(--glow-strong);
+  margin-bottom: 20px;
+  animation: glitch 10s ease-in-out infinite;
+}
+
+.cta-desc {
+  font-size: 13px;
+  color: var(--green);
+  opacity: 0.45;
+  margin-bottom: 36px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+.cta-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.cta-link {
+  color: var(--green);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta-link:hover {
+  opacity: 1;
+  text-shadow: var(--glow);
+}
+
+.cta-link .arrow {
+  transition: transform 0.3s ease;
+}
+
+.cta-link:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* ========== FOOTER ========== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--green);
+  opacity: 0.2;
+  text-transform: uppercase;
+}
+
+/* ========== SCROLL ANIMATIONS ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== TYPING EFFECT IN HERO ========== */
+.typing-line {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--green);
+  animation: typing 2.5s steps(44) 0.5s forwards, blink 1s step-end 3s infinite;
+  width: 0;
+  display: inline-block;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  .approach-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .founder-section .founder-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .founder-terminal {
+    width: 100%;
+    max-width: 360px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+  .stat-item:nth-child(2)::after {
+    display: none;
+  }
+  .stat-item:nth-child(1)::after,
+  .stat-item:nth-child(3)::after {
+    display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .nav-links {
+    position: fixed;
+    top: 86px;
+    left: 0; right: 0;
+    background: rgba(0, 0, 0, 0.97);
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-120%);
+    transition: transform 0.4s ease;
+  }
+  .nav-links.open {
+    transform: translateY(0);
+  }
+  .nav-toggle {
+    display: flex;
+  }
+  .approach-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-item::after {
+    display: none !important;
+  }
+  .stat-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+  }
+  .stat-item:last-child {
+    border-bottom: none;
+  }
+  section { padding: 64px 0; }
+  .hero { padding-top: 100px; }
+}
+
+/* ========== MATRIX RAIN CANVAS ========== */
+#matrix-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.06;
+}
+</style>
+</head>
+<body>
+
+<!-- Matrix rain background -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- Approach Label Banner -->
+<div class="approach-label">Approach A &mdash; Cyberpunk Terminal</div>
+
+<!-- ========== NAV ========== -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="v-mark">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0055FF"/>
+              <stop offset="100%" stop-color="#00D4FF"/>
+            </linearGradient>
+          </defs>
+          <!-- V-Mark chevron -->
+          <path d="M8 10 L20 30 L32 10" stroke="url(#vgrad)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Scan line -->
+          <line x1="5" y1="20" x2="35" y2="20" stroke="url(#vgrad)" stroke-width="1" opacity="0.35"/>
+        </svg>
+      </div>
+      <span class="nav-wordmark">VLABS Cyber</span>
+    </a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#founder">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" class="nav-cta">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Cybersecurity Research &amp; Engineering</div>
+      <h1>Where Security Gets Engineered<span class="cursor"></span></h1>
+      <p class="hero-desc">
+        <span class="prompt">$</span> An independent cybersecurity lab focused on authentication research, Zero Trust architecture, and hands-on technical training. We build, break, and document security &mdash; so you don&rsquo;t ship on faith.
+      </p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-primary">Work With Us</a>
+        <a href="#services" class="btn-secondary">What We Do</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== STATS ========== -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <span class="stat-value">18+</span>
+        <span class="stat-label">Years Experience</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-value">LAB</span>
+        <span class="stat-label">Driven Research</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-value">0&thinsp;T</span>
+        <span class="stat-label">Zero Trust Engineering</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-value">EN/ES</span>
+        <span class="stat-label">Bilingual Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SERVICES ========== -->
+<section id="services">
+  <div class="container">
+    <div class="section-label reveal">services</div>
+    <h2 class="section-title reveal">What We Do</h2>
+    <p class="section-desc reveal">Specialized capabilities built from real lab research &mdash; not vendor slide decks.</p>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <span class="service-icon">[auth]</span>
+        <h3>Authentication Engineering</h3>
+        <p>Deep-stack 802.1X, RADIUS, EAP, and PKI implementation. We design and deploy authentication infrastructure that actually works at scale.</p>
+        <div class="service-tags">
+          <span>802.1X</span>
+          <span>RADIUS</span>
+          <span>EAP</span>
+          <span>PKI</span>
+          <span>NAC</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <span class="service-icon">[ztna]</span>
+        <h3>Zero Trust R&amp;D</h3>
+        <p>Lab-validated Zero Trust architecture design and implementation. Every recommendation comes with a proof of concept built in our environment first.</p>
+        <div class="service-tags">
+          <span>Architecture</span>
+          <span>Policy</span>
+          <span>Microsegmentation</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <span class="service-icon">[train]</span>
+        <h3>Technical Training</h3>
+        <p>Hands-on security training delivered in English and Spanish. From authentication fundamentals to advanced protocol analysis &mdash; lab-based, not lecture-based.</p>
+        <div class="service-tags">
+          <span>English</span>
+          <span>Espa&ntilde;ol</span>
+          <span>Hands-On</span>
+          <span>Lab-Based</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <span class="service-icon">[dev]</span>
+        <h3>Tool Development</h3>
+        <p>Custom security tooling and open-source contributions. We build the utilities and automation that make security engineering repeatable.</p>
+        <div class="service-tags">
+          <span>Open Source</span>
+          <span>Automation</span>
+          <span>Tooling</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== APPROACH ========== -->
+<section id="approach" class="approach-section">
+  <div class="container">
+    <div class="approach-header">
+      <div class="section-label reveal">methodology</div>
+      <h2 class="section-title reveal">Lab First</h2>
+      <p class="section-desc reveal">Every engagement starts in the lab. We don&rsquo;t guess at solutions &mdash; we build, test, and validate before anything touches production.</p>
+    </div>
+    <div class="approach-grid">
+      <div class="approach-step reveal">
+        <span class="step-number">01</span>
+        <h3>Research</h3>
+        <p>Investigate the problem space. Read the RFCs, study the protocols, map the threat model. Understand before acting.</p>
+      </div>
+      <div class="approach-step reveal">
+        <span class="step-number">02</span>
+        <h3>Build</h3>
+        <p>Stand it up in the lab. Prototype configurations, deploy test infrastructure, create a working proof of concept.</p>
+      </div>
+      <div class="approach-step reveal">
+        <span class="step-number">03</span>
+        <h3>Break</h3>
+        <p>Stress test everything. Find the failure modes, edge cases, and bypass opportunities before an attacker does.</p>
+      </div>
+      <div class="approach-step reveal">
+        <span class="step-number">04</span>
+        <h3>Document</h3>
+        <p>Record every finding. Deliver clear, actionable documentation that your team can execute on independently.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOUNDER ========== -->
+<section id="founder" class="founder-section">
+  <div class="container">
+    <div class="section-label reveal">about</div>
+    <h2 class="section-title reveal" style="margin-bottom: 48px;">The Engineer</h2>
+    <div class="founder-inner">
+      <div class="founder-terminal reveal">
+        <div class="terminal-bar">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">whoami</span>
+        </div>
+        <div class="terminal-body">
+          <span class="line"><span class="key">name:</span> <span class="val highlight">Nigero Vargas</span></span>
+          <span class="line"><span class="key">role:</span> <span class="val">Founder &amp; Principal</span></span>
+          <span class="line"><span class="key">background:</span> <span class="val">U.S. Army Veteran</span></span>
+          <span class="line"><span class="key">focus:</span> <span class="val">802.1X / RADIUS / NAC</span></span>
+          <span class="line"><span class="key">languages:</span> <span class="val">EN / ES (native)</span></span>
+          <span class="line"><span class="key">approach:</span> <span class="val">Lab-First</span></span>
+          <span class="line" style="margin-top: 8px; opacity: 0.3;">$ <span style="animation: blink 1s step-end infinite;">_</span></span>
+        </div>
+      </div>
+      <div class="founder-content reveal">
+        <h2>Nigero Vargas</h2>
+        <p class="founder-title">Founder &amp; Principal Engineer</p>
+        <p class="founder-bio">
+          Army veteran turned cybersecurity engineer with 18+ years of experience in authentication infrastructure and network access control. Specializes in 802.1X, RADIUS, and Zero Trust architecture &mdash; the protocols most organizations get wrong.
+        </p>
+        <p class="founder-bio">
+          Native Spanish speaker delivering bilingual technical training and consulting. Everything at VLABS Cyber starts in the lab &mdash; if it hasn&rsquo;t been built and broken in a test environment, it doesn&rsquo;t get recommended.
+        </p>
+        <div class="credential-tags">
+          <span>U.S. Army Veteran</span>
+          <span>802.1X Expert</span>
+          <span>RADIUS / NAC</span>
+          <span>Zero Trust</span>
+          <span>Bilingual EN/ES</span>
+          <span>Lab Researcher</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section id="contact" class="cta-section">
+  <div class="container">
+    <div class="section-label reveal" style="text-align:center;">initiate</div>
+    <h2 class="reveal">Let&rsquo;s Build Something<span class="cursor"></span></h2>
+    <p class="cta-desc reveal">Ready to stop guessing at security? Let&rsquo;s talk about what lab-driven engineering can do for your organization.</p>
+    <div class="cta-links reveal">
+      <a href="mailto:contact@vlabscyber.com" class="cta-link">
+        contact@vlabscyber.com <span class="arrow">&rarr;</span>
+      </a>
+      <a href="https://calendly.com/indyciscolab/30min" target="_blank" rel="noopener" class="cta-link">
+        Schedule a Call <span class="arrow">&rarr;</span>
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener" class="cta-link">
+        LinkedIn <span class="arrow">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="container">
+    <p class="footer-text">&copy; 2026 VLABS Cyber. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+// ---- Scroll reveal ----
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+revealEls.forEach(el => revealObserver.observe(el));
+
+// ---- Matrix rain ----
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+const fontSize = 14;
+let columns = Math.floor(canvas.width / fontSize);
+let drops = Array(columns).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00FF41';
+  ctx.font = fontSize + 'px "Fira Code", monospace';
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrix, 50);
+
+window.addEventListener('resize', () => {
+  columns = Math.floor(canvas.width / fontSize);
+  drops = Array(columns).fill(1);
+});
+
+// ---- Smooth scroll for nav links ----
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Close mobile nav if open
+      document.querySelector('.nav-links').classList.remove('open');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
