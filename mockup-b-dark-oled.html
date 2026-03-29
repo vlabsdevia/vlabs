@@ -820,6 +820,23 @@
       color: var(--cyan);
     }
 
+    /* ── CONTACT FORM ── */
+    .contact-form { max-width: 520px; margin: 48px auto 0; text-align: left; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #666; margin-bottom: 8px; font-weight: 500; }
+    .form-group input, .form-group textarea { width: 100%; padding: 16px 18px; background: #121212; border: 1px solid #222; border-radius: 12px; color: #E0E0E0; font-family: inherit; font-size: 15px; transition: border-color 0.3s, box-shadow 0.3s; outline: none; }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #444; }
+    .form-group input:focus, .form-group textarea:focus { border-color: #0080FF; box-shadow: 0 0 0 3px rgba(0,128,255,0.1); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-submit { width: 100%; margin-top: 8px; }
+    .form-submit .btn { width: 100%; justify-content: center; }
+    .form-success { display: none; text-align: center; padding: 40px 20px; }
+    .form-success .check { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #0055FF, #00D4FF); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .form-success h3 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .form-success p { font-size: 14px; color: #888; margin: 0; }
+    @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
+
     /* ══════════════════════════════════════════
        FOOTER
     ══════════════════════════════════════════ */
@@ -1234,11 +1251,37 @@
         Whether it is an authentication architecture challenge, Zero Trust design,
         or training for your team — let's talk about what you need built.
       </p>
-      <div class="cta-actions">
-        <a href="mailto:contact@vlabscyber.com" class="btn btn-primary">
-          Get In Touch
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-        </a>
+      <div class="contact-form reveal" id="contactForm">
+        <form id="contactFormEl" onsubmit="return handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@company.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="What's this about?">
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell us about your project or question..." required></textarea>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary">Send Message<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+          </div>
+        </form>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h3>Message Sent</h3>
+        <p>Thanks for reaching out. We'll get back to you soon.</p>
+      </div>
+      <div class="cta-actions" style="margin-top: 32px;">
 <a href="https://www.linkedin.com/company/vlabscyber" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
       </div>
       <div class="cta-contact">
@@ -1332,6 +1375,19 @@
       });
     });
   </script>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  var btn = document.querySelector('#contactFormEl button[type="submit"]');
+  btn.innerHTML = 'Sending...';
+  setTimeout(function() {
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }, 1200);
+  return false;
+}
+</script>
 
 <!-- Calendly badge widget begin -->
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">

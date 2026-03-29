@@ -839,6 +839,24 @@ section {
   transform: translateX(4px);
 }
 
+/* ── CONTACT FORM ── */
+.contact-form { max-width: 520px; margin: 48px auto 0; text-align: left; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-family: 'Fira Code', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+.form-group input, .form-group textarea { width: 100%; padding: 14px 16px; background: #0C130E; border: 1px solid #1F1F1F; border-radius: 0; color: #00FF41; font-family: 'Fira Code', monospace; font-size: 14px; transition: border-color 0.3s, box-shadow 0.3s; outline: none; }
+.form-group input::placeholder, .form-group textarea::placeholder { color: #333; }
+.form-group input:focus, .form-group textarea:focus { border-color: #00FF41; box-shadow: 0 0 8px rgba(0,255,65,0.15); }
+.form-group textarea { resize: vertical; min-height: 120px; }
+.form-submit { width: 100%; margin-top: 8px; }
+.form-submit button { width: 100%; padding: 14px; background: transparent; border: 1px solid #00FF41; color: #00FF41; font-family: 'Fira Code', monospace; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+.form-submit button:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 20px rgba(0,255,65,0.2); }
+.form-success { display: none; text-align: center; padding: 40px 20px; }
+.form-success .check { width: 56px; height: 56px; border: 1px solid #00FF41; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.form-success h3 { font-family: 'Share Tech Mono', monospace; font-size: 20px; color: #00FF41; margin-bottom: 8px; }
+.form-success p { font-size: 13px; color: #555; margin: 0; font-family: 'Fira Code', monospace; }
+@media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
+
 /* ========== FOOTER ========== */
 footer {
   border-top: 1px solid var(--border);
@@ -1176,11 +1194,38 @@ footer {
     <div class="section-label reveal" style="text-align:center;">initiate</div>
     <h2 class="reveal">Let&rsquo;s Build Something<span class="cursor"></span></h2>
     <p class="cta-desc reveal">Ready to stop guessing at security? Let&rsquo;s talk about what lab-driven engineering can do for your organization.</p>
-    <div class="cta-links reveal">
-      <a href="mailto:contact@vlabscyber.com" class="cta-link">
-        contact@vlabscyber.com <span class="arrow">&rarr;</span>
-      </a>
-<a href="https://linkedin.com" target="_blank" rel="noopener" class="cta-link">
+    <div class="contact-form reveal" id="contactForm">
+      <form id="contactFormEl" onsubmit="return handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">> name</label>
+            <input type="text" id="name" name="name" placeholder="your_name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">> email</label>
+            <input type="email" id="email" name="email" placeholder="you@domain.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="subject">> subject</label>
+          <input type="text" id="subject" name="subject" placeholder="what_is_this_about">
+        </div>
+        <div class="form-group">
+          <label for="message">> message</label>
+          <textarea id="message" name="message" placeholder="describe_your_project..." required></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit">[ TRANSMIT ]</button>
+        </div>
+      </form>
+    </div>
+    <div class="form-success" id="formSuccess">
+      <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00FF41" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h3>> transmission_complete</h3>
+      <p>message received. standby for response.</p>
+    </div>
+    <div class="cta-links reveal" style="margin-top: 32px;">
+      <a href="https://linkedin.com" target="_blank" rel="noopener" class="cta-link">
         LinkedIn <span class="arrow">&rarr;</span>
       </a>
     </div>
@@ -1260,6 +1305,19 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+</script>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  var btn = document.querySelector('#contactFormEl button[type="submit"]');
+  btn.textContent = '[ TRANSMITTING... ]';
+  setTimeout(function() {
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }, 1200);
+  return false;
+}
 </script>
 
 <!-- Calendly badge widget begin -->
